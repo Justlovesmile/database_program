@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Welcome to XMJ_BBS!</title>
+    <script src="https://cdnjs.loli.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+    <h1>Hello,welcome to XMJ_BBS!</h1>
+    <input type="text">
+    <button>点击提交</button>
+</body>
+<script>
+        // 往服务器上传要保存的data
+        update_something = function(){
+            // 取出输入框的值
+            a = $('input').val()
+            // 做一个简单的dict
+            data = {
+                'input': a
+            }
+            // 给后端传过去
+            $.post('/test/', data, function(ans){
+                console.log('我上传完毕啦～')
+                console.log('ans:', ans)
+            })
+        } 
+        
+        // 只要我button被点击了 我就执行这个function 哼
+        $('button').click(function(){
+            update_something()
+        })
+    </script>
+</html>
