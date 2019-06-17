@@ -4,19 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="shortcut icon" href="E:/python/database_program/templates/static/img/logo.png">
     <title>Welcome to XMJ_BBS!</title>
     <script src="https://cdnjs.loli.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 <body>
-    <h1>Hello,welcome to XMJ_BBS!</h1>
-    <input type="text">
-    <button>点击提交</button>
+    <div id="header">
+        <h1 align="center">Welcome to XMJ's BBS!</h1>
+    </div>
+    <div id="box">
+        <div >
+            <p>输入1:
+            <input type="text">
+            <button>点击提交</button>
+            </p>
+        </div>
+        <div>
+            <p>输入2:
+            <input type="text">
+            <button>点击提交</button>
+            </p>
+        </div>
+    </div>
+    <div id="footer">
+    </div>
+    
 </body>
 <script>
         // 往服务器上传要保存的data
         update_something = function(){
             // 取出输入框的值
-            a = $('input').val()
+            input = $('input').val()
             // 做一个简单的dict
             data = {
                 'input': a
