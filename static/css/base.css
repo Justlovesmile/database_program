@@ -1,0 +1,117 @@
+body {
+    background: #f6f6f6;
+    margin: 0px; 
+}
+.header {
+    width: auto;
+    height:50px;
+    background-color: #222831;
+}
+.menu
+	{
+		font-size: 0;
+        margin-left: 80px;
+        margin-right:80px;
+		height: 50px;
+		
+	}
+	.menubar
+	{
+		margin: 0 auto;
+		position: absolute;
+		list-style-type: none;
+        width: 60%;
+        float:left;
+		
+	}
+ 
+        .menubar li
+        {
+            display:inline-block;
+            cursor: pointer;
+            line-height: 50px;
+            margin-left: 50px;		
+        }
+        .menubar li.menu-value
+        {
+            background-color: #222831;	
+            margin-left:40px;
+        }
+    .menubar_right{
+        width:20%;
+        min-width: 20px;
+        margin:0 auto;
+        list-style-type: none;
+        float: right;
+    }
+    .menubar_right li{
+        display:inline-block;
+        cursor: pointer;
+        line-height: 50px;
+        margin-left:50px;
+    }
+	.menu a
+	{
+		display: block;
+		height: 40px;
+		font-family: "微软雅黑","Microsoft Yahei","Hiragino Sans GB",tahoma,arial,"宋体" ;
+		font-size: 14px;
+		text-align: center;
+        text-decoration: none;
+		color: #fff;
+	}
+    .navbar_img{
+        height: 40px;
+        width: 70px;
+        margin: 0 auto;
+        border-radius:0;
+    }
+ul{
+    list-style-type:none;
+    margin:0;
+    padding:0;
+}
+a {
+    color: white;
+}
+    a:focus {
+        text-decoration: none
+    }
+    a:link { text-decoration: none;}
+    a:active { text-decoration:none}
+    a:hover { text-decoration:none;color: #00adb5} 
+    a:visited { text-decoration: none;}
+
+.content{
+    margin:10px;
+}
+    .login_box{
+        width:20%;
+        margin-left: 40%;
+    }
+        .card{
+            background:white;
+            margin-bottom: 15px;
+            padding:10px;
+            min-width: 200px;
+            border-radius:5px;
+            box-shadow: 0 1px 3px rgb(234, 234, 234);
+        }
+        .card hr{
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+            .welcome_img{
+                height: 90%;
+                width: 90%;
+                margin: 10px;
+                border-radius:0;
+            }
+    .content_box{
+        width:80%;
+        margin-left: 10%;
+    }
+        .search_ans{
+            padding:5px,10px;
+            color:#222831;
+        }

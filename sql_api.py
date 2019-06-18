@@ -87,3 +87,25 @@ def update_db(table,**data):
     else:
         return "已修改！"
     conn.close()
+
+def logincheck(nickname,passwd):
+    conn=connect_db()
+    cursor=conn.cursor()
+    u_sql=f"select passwd from users where nickname='{nickname}';"
+    #print(u_sql)
+    try:
+        cursor.execute(u_sql)
+        ans=cursor.fetchall()[0][0]
+        print(ans)
+        print(passwd)
+        conn.commit()
+    except:
+        conn.rollback()
+        conn.close()
+        return "error"
+    else:
+        if passwd==ans:
+            conn.close()
+            return "ok"
+        else:
+            return "error"
