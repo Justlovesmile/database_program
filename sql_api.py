@@ -1,6 +1,7 @@
 import pymysql
 import time
 
+
 def connect_db():
     database_info={
         'host': 'localhost',
@@ -23,32 +24,77 @@ def selectall_db(table):
     #select * from {table}
     conn=connect_db()
     cursor=conn.cursor()
-    s_sql=f"select * from {table}"
+    s_sql=f"select * from {table};"
     try:
         ans=cursor.fetchmany(cursor.execute(s_sql))    
     except:
-        return "Error!"
+        conn.close()
+        return "error"
     else:
+        conn.close()
         return ans
-    conn.close()
 
-def insert_db(table,**data):
+def select_str_db(table,need,key,value):
+    conn=connect_db()
+    cursor=conn.cursor()
+    s_sql=f"select {need} from {table} where {key}='{value}';" 
+    try:
+        ans=cursor.fetchmany(cursor.execute(s_sql))    
+    except:
+        conn.close()
+        print('error')
+        return "error"
+    else:
+        conn.close()
+        return ans
+
+def select_num_db(table,need,key,value):
+    conn=connect_db()
+    cursor=conn.cursor()
+    s_sql=f"select {need} from {table} where {key}={value};" 
+    try:
+        ans=cursor.fetchmany(cursor.execute(s_sql))    
+    except:
+        conn.close()
+        return "error"
+    else:
+        conn.close()
+        return ans
+
+def insert_users(nickname,passwd,name,sex,email):
     # insert into {table} {**data.keys()}vaule {**data.values()}
     conn=connect_db()
     cursor=conn.cursor()
-    key=tuple(data.keys())
-    value=tuple(data.values())
-    i_sql=f"insert into {table} {key} values {value};"
-    #print(i_sql)
+    i_sql=f"insert into users (nickname,passwd,name,sex,email) values ('{nickname}','{passwd}','{name}','{sex}','{email}');"
+    print(i_sql)
     try:
         cursor.execute(i_sql)
         conn.commit()
     except:
         conn.rollback()
-        return "插入失败！"
+        conn.close()
+        return "error"
     else:    
-        return "插入成功！"
-    conn.close()
+        conn.close()
+        return "ok"
+    
+def insert_posts(title,content,author_id):
+    # insert into {table} {**data.keys()}vaule {**data.values()}
+    now=time.strftime("%Y-%m-%d %H:%M:%S",time.localtime())
+    conn=connect_db()
+    cursor=conn.cursor()
+    i_sql=f"insert into posts (title,content,author_id,time) values ('{title}','{content}',{author_id},'{now}');"
+    print(i_sql)
+    try:
+        cursor.execute(i_sql)
+        conn.commit()
+    except:
+        conn.rollback()
+        conn.close()
+        return "error"
+    else:    
+        conn.close()
+        return "ok"
 
 def delete_db(table,**data):
     #删除data={'key':'value'}中当key=value的元组
@@ -63,10 +109,11 @@ def delete_db(table,**data):
         conn.commit()
     except:
         conn.rollback()
-        return "删除失败！"
+        conn.close()
+        return "error"
     else:
-        return "已删除！"
-    conn.close()
+        conn.close()
+        return "ok"
 
 def update_db(table,**data):
     #修改数据
@@ -83,21 +130,22 @@ def update_db(table,**data):
         conn.commit()
     except:
         conn.rollback()
-        return "修改失败！"
+        conn.close()
+        return "error"
     else:
-        return "已修改！"
-    conn.close()
+        conn.close()
+        return "ok"
 
-def logincheck(nickname,passwd):
+def logincheck(table,nickname,passwd):
     conn=connect_db()
     cursor=conn.cursor()
-    u_sql=f"select passwd from users where nickname='{nickname}';"
+    u_sql=f"select passwd from {table} where nickname='{nickname}';"
     #print(u_sql)
     try:
         cursor.execute(u_sql)
         ans=cursor.fetchall()[0][0]
-        print(ans)
-        print(passwd)
+        #print(ans)
+        #print(passwd)
         conn.commit()
     except:
         conn.rollback()
@@ -108,4 +156,5 @@ def logincheck(nickname,passwd):
             conn.close()
             return "ok"
         else:
+            conn.close()
             return "error"

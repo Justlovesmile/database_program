@@ -24,13 +24,14 @@ def check_db():
         for i in cursor.fetchmany(cursor.execute(sql)):
             databases.append("".join(i))
         if u_db not in databases:
-            create_db(cursor)
+            create_db(conn)
             conn.close()
         else:
-            use_db(cursor)
+            use_db(conn)
             conn.close()
 
-def create_db(cursor):
+def create_db(conn):
+    cursor = conn.cursor()
     now=time.strftime("%Y-%m-%d %H:%M:%S",time.localtime())
     c_sql=f"""
         CREATE DATABASE IF NOT EXISTS userprogram;
@@ -55,12 +56,11 @@ def create_db(cursor):
             `nickname` char(20) unique NOT NULL,
             `passwd` char(20) NOT NULL,
             `name` char(20),
-            `sex` char(1),
             `permission_level` tinyint(1) default 1,
             PRIMARY KEY (`Admin_id`)
             )DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1;
         
-        insert  into `Administrators`(`Admin_id`,`nickname`,`passwd`,`name`,`sex`,`permission_level`) values (1,'至高管理员','justlovesmile','谢明杰','男',0),(2,'1','1','JJ','男',1);
+        insert  into `Administrators`(`Admin_id`,`nickname`,`passwd`,`name`,`permission_level`) values (1,'至高管理员','justlovesmile','谢明杰',0),(2,'1','1','JJ',1);
 
         CREATE TABLE `Posts` (
             `post_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -96,18 +96,19 @@ def create_db(cursor):
             i=i+';'
             cursor.execute(i)
     except:
-        dbreturn='(check)创建失败！'
-        print(dbreturn)
+        conn.rollback()
+        print('(check)创建失败！')
     else:
-        dbreturn='(check)创建成功！'
-        print(dbreturn)
-        use_db(cursor)
+        print('(check)创建成功！')
+        use_db(conn)
 
-def use_db(cursor):
+def use_db(conn):
+    cursor = conn.cursor()
     u_sql='use userprogram;'
     try:
         cursor.execute(u_sql)
     except:
+        conn.rollback()
         dbreturn='(check)使用失败！'
         print(dbreturn)
     else:

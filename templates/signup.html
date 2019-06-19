@@ -1,34 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="shortcut icon" href="/static/img/logo.png">
-    <script src="https://cdnjs.loli.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <title>立即登陆_BBS</title>
-    <link rel="stylesheet" href="/static/css/base.css">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="shortcut icon" href="/static/img/logo.png">
+        <script type="text/javascript" src="/static/js/jquery-3.4.1.js"></script>
+        <link rel="stylesheet" href="/static/css/base.css">
+        <script type="text/javascript" src="/static/js/check_session.js"></script>
+    <title>立即注册_BBS</title>
 </head>
 <body>
-    <div class='header'>
-        <div class="menu">
-                <ul class="menubar" id="left_nav">
-                    <li class="menu-value" ><a class="navbar_brand" class="navbar_img" style="font-weight:bold" href="/">
-                        <img src="/static/img/bbs.png" class="navbar_img"></a><li>
-                    <li class=""><a href="/"><span class="glyphicon glyphicon-home"></span> 首页</a></li>
-                    <li class="" ><a href="/newpost/"><span class="glyphicon glyphicon-time"></span> 最新</a></li>
-                    <li class="" ><a href="/search/"><span class="glyphicon glyphicon-search"></span> 搜索</a></li>
-                    <li class="" ><a href="/introduce/"><span class="glyphicon glyphicon-info-sign"></span> 说明</a></li>
-                </ul>
-                <ul class="menubar_right" id="right_nav">
-                    <li class=""><a href='/login/'> 登陆</a></li>
-                </ul>
+        <div class='header'>
+                <div class="menu">
+                    <div>
+                        <ul class="menubar" id="left_nav">
+                            <li class="menu-value" ><a class="navbar_img" style="font-weight:bold" href="/">
+                                <img src="/static/img/bbs.png" class="navbar_img"></a><li>
+                            <li class=""><a href="/"><span class="glyphicon glyphicon-home"></span> 首页</a></li>
+                            <li class="" ><a href="/newpost/"><span class="glyphicon glyphicon-time"></span> 最新</a></li>
+                            <li class="" ><a href="/search/"><span class="glyphicon glyphicon-search"></span> 搜索</a></li>
+                            <li class="" ><a href="/introduce/"><span class="glyphicon glyphicon-info-sign"></span> 说明</a></li>
+                        </ul>
+                        <ul class="menubar_right" id="right_nav">
+                            <li  id="session_check_nav"><a href='/login/'> 登陆</a></li>
+                        </ul>
+                    </div>
+                </div>
+        </div>
+    <div class="content">
+        <div class="login_box">
+                <div class='card'>
+                    <div style="text-align: center;">
+                    <p>👇请根据下列表单填写注册信息👇</p>    
+                    </div>   
+                </div>
+                <div class='card'>
+                    <div class="signup_box">
+                        <div class="form-group">
+                            用户名：<input type="text" class="form-control" autofocus="autofocus" id="nickname" placeholder="必填">
+                            密  码：<input type="text" class="form-control" autofocus="autofocus" id="passwd" placeholder="必填">
+                            姓  名：<input type="text" class="form-control" autofocus="autofocus" id="username" placeholder="非必填">
+                        </div>
+                        <div class="form-group">
+                            性别：
+                            <table style="margin:0 auto;">
+                                <tr>
+                                    <td><input type="radio" name="sex" value="男" id="selected_male">男</td>
+                                    <td style="width: 50px;"></td>
+                                    <td><input type="radio" name="sex" value="女" id="selected_female">女</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="form-group">
+                            邮箱：<input type="text" class="form-control" autofocus="autofocus" id="email" placeholder="非必填">
+                        </div>
+                        <hr>
+                        <button id="signupBtn" class="btn btn-block btn-default">立即注册</button>
+                    </div>
+            </div>
         </div>
     </div>
-    <div class="content">
-        
-    </div>
+    <script>
+        //定义函数
+        signup_check=function(){
+            nickname=$('#nickname').val()
+            passwd=$('#passwd').val()
+            username=$('#username').val()
+            email=$('#email').val()
+            sex=$('input:radio[name="sex"]:checked').val()
+            if (nickname==''||passwd==''){
+                alert('注册失败！请检查必填项是否填写完毕.')
+                return false
+            }
+            data={
+                'nickname':nickname,
+                'passwd':passwd,
+                'name':username,
+                'sex':sex,
+                'email':email
+            }
+            $.post('/signup-check/',data,function(ans){
+                if(ans=='ok'){
+                    alert('注册成功！快来登陆吧！');
+                    window.location.replace("/login/");
+
+                }
+            })
+        }
+        //定义触发事件
+        $('#signupBtn').click(function(){
+            signup_check()
+        })
+    </script>
     <div class="jumbotron text-center" style="margin-top:500px" id="footer">
             <p>哈尔滨工程大学---数据库课程设计---2019</p>
     </div>

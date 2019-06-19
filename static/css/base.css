@@ -17,7 +17,7 @@ body {
 	}
 	.menubar
 	{
-		margin: 0 auto;
+		margin: 0;
 		position: absolute;
 		list-style-type: none;
         width: 60%;
@@ -30,7 +30,7 @@ body {
             display:inline-block;
             cursor: pointer;
             line-height: 50px;
-            margin-left: 50px;		
+            margin-left: 50px;
         }
         .menubar li.menu-value
         {
@@ -40,20 +40,21 @@ body {
     .menubar_right{
         width:20%;
         min-width: 20px;
-        margin:0 auto;
+        margin:0;
         list-style-type: none;
+        height:50px;
         float: right;
     }
     .menubar_right li{
         display:inline-block;
         cursor: pointer;
         line-height: 50px;
-        margin-left:50px;
+        
     }
 	.menu a
 	{
 		display: block;
-		height: 40px;
+		height: 50px;
 		font-family: "微软雅黑","Microsoft Yahei","Hiragino Sans GB",tahoma,arial,"宋体" ;
 		font-size: 14px;
 		text-align: center;

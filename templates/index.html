@@ -6,65 +6,88 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="shortcut icon" href="/static/img/logo.png">
-    <title>Welcome to XMJ_BBS!</title>
-    <script src="https://cdnjs.loli.net/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-3.4.1.js"></script>
     <link rel="stylesheet" href="/static/css/base.css">
+    <script type="text/javascript" src="/static/js/check_session.js"></script>
+    <title>Welcome to XMJ_BBS!</title>
 </head>
 <body>
-        <div class='header'>
-                <div class="menu">
-                        <ul class="menubar" id="left_nav">
-                            <li class="menu-value" ><a class="navbar_brand" class="navbar_img" style="font-weight:bold" href="/">
-                                <img src="/static/img/bbs.png" class="navbar_img"></a><li>
-                            <li class=""><a href="/"><span class="glyphicon glyphicon-home"></span> 首页</a></li>
-                            <li class="" ><a href="/newpost/"><span class="glyphicon glyphicon-time"></span> 最新</a></li>
-                            <li class="" ><a href="/search/"><span class="glyphicon glyphicon-search"></span> 搜索</a></li>
-                            <li class="" ><a href="/introduce/"><span class="glyphicon glyphicon-info-sign"></span> 说明</a></li>
-                        </ul>
-                        <ul class="menubar_right" id="right_nav">
-                            <li class=""><a href='/login/'> 登陆</a></li>
-                        </ul>
+    <div class='header'>
+            <div class="menu">
+                <div>
+                    <ul class="menubar" id="left_nav">
+                        <li class="menu-value" ><a class="navbar_img" style="font-weight:bold" href="/">
+                            <img src="/static/img/bbs.png" class="navbar_img"></a><li>
+                        <li class=""><a href="/"><span class="glyphicon glyphicon-home"></span> 首页</a></li>
+                        <li class="" ><a href="/newpost/"><span class="glyphicon glyphicon-time"></span> 最新</a></li>
+                        <li class="" ><a href="/search/"><span class="glyphicon glyphicon-search"></span> 搜索</a></li>
+                        <li class="" ><a href="/introduce/"><span class="glyphicon glyphicon-info-sign"></span> 说明</a></li>
+                    </ul>
+                    <ul class="menubar_right" id="right_nav">
+                        <li  id="session_check_nav"><a href='/login/'> 登陆</a></li>
+                    </ul>
                 </div>
             </div>
-    <div id="box">
-        <div >
-            <p>输入1:
-            <input type="text">
-            <button>点击提交</button>
-            </p>
-        </div>
-        <div>
-            <p>输入2:
-            <input type="text">
-            <button>点击提交</button>
-            </p>
+    </div>
+    <div class="content">
+        <div class="content_box">
+            <div class="card">
+                <form role="form">
+                    <div class="form-group">
+                        <label for="title">名称</label>
+                            <input type="text" class="form-control" id="title" maxlength="20" placeholder="这里输入标题哟(＾Ｕ＾)ノ~ＹＯ">
+                    </div>
+                    <div class="form-group">
+                        <label for="inputfile">帖子内容</label>
+                        <textarea id="post_conent" class="form-control" rows="5" style="max-width: 100%;min-width: 90%;" placeholder="这里输入内容哟o(*￣▽￣*)ブ"></textarea>
+                        <p class="help-block">快来分享你的感想!一键轻松记录.</p>
+                    </div>
+                    <div class="checkbox">
+                    </div>
+                        <button id="postBtn" class="btn btn-default">提交</button>
+                </form>
+            </div>
         </div>
     </div>
-    <div id="footer">
-    </div>
+    <script>
+        //定义所有函数
+        post=function(){
+            title=$('#title').val()
+            content=$('#post_content').val()
+            if(title==''){
+                alert("标题不能为空！")
+                return false
+            }
+            if(content==''){
+                alert("帖子内容不能为空！")
+                return false
+            }
+            if (confirm('请再次确认是否提交？') == false){
+                return false
+            }
+            data={
+                'title':title,
+                'content':content
+            }
+            $.post('/post-content/',data,function(ans){
+                if(ans=='ok'){
+                    alert("发布成功了！✌")
+                }
+                else{
+                    alert("发布失败了！😭")
+                }
+            })
+        }
+        //定义所有触发事件
+        $('#postBtn').click(function(){
+            post()
+        })
+    </script>
     <div class="jumbotron text-center" style="margin-top:500px" id="footer">
             <p>哈尔滨工程大学---数据库课程设计---2019</p>
     </div>
 </body>
-<script>
-        // 往服务器上传要保存的data
-        update_something = function(){
-            // 取出输入框的值
-            input = $('input').val()
-            // 做一个简单的dict
-            data = {
-                'input': a
-            }
-            // 给后端传过去
-            $.post('/test/', data, function(ans){
-                console.log('我上传完毕啦～')
-                console.log('ans:', ans)
-            })
-        } 
-        
-        // 只要我button被点击了 我就执行这个function 哼
-        $('button').click(function(){
-            update_something()
-        })
+    <script>
+
     </script>
 </html>
