@@ -38,11 +38,12 @@ def select_str_db(table,need,key,value):
     conn=connect_db()
     cursor=conn.cursor()
     s_sql=f"select {need} from {table} where {key}='{value}';" 
+    #print(s_sql)
     try:
         ans=cursor.fetchmany(cursor.execute(s_sql))    
     except:
         conn.close()
-        print('error')
+        #print('error')
         return "error"
     else:
         conn.close()
@@ -84,7 +85,25 @@ def insert_posts(title,content,author_id):
     conn=connect_db()
     cursor=conn.cursor()
     i_sql=f"insert into posts (title,content,author_id,time) values ('{title}','{content}',{author_id},'{now}');"
-    print(i_sql)
+    #print(i_sql)
+    try:
+        cursor.execute(i_sql)
+        conn.commit()
+    except:
+        conn.rollback()
+        conn.close()
+        return "error"
+    else:    
+        conn.close()
+        return "ok"
+
+def insert_comments(post_id,content,author_id):
+    # insert into {table} {**data.keys()}vaule {**data.values()}
+    now=time.strftime("%Y-%m-%d %H:%M:%S",time.localtime())
+    conn=connect_db()
+    cursor=conn.cursor()
+    i_sql=f"insert into comments (post_id,content,author_id,time) values ('{post_id}','{content}',{author_id},'{now}');"
+    #print(i_sql)
     try:
         cursor.execute(i_sql)
         conn.commit()

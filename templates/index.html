@@ -31,15 +31,18 @@
     </div>
     <div class="content">
         <div class="content_box">
+            <div class='card'>
+                <p style="text-align: center;font-size: 25px;"><strong>👇在这里你可以发表感想👇</strong></p>
+            </div>
             <div class="card">
                 <form role="form">
                     <div class="form-group">
-                        <label for="title">名称</label>
-                            <input type="text" class="form-control" id="title" maxlength="20" placeholder="这里输入标题哟(＾Ｕ＾)ノ~ＹＯ">
+                        <label for="title">标题</label>
+                            <input type="text" class="form-control" id="title" maxlength="20" placeholder="这里输入标题哟(＾Ｕ＾)ノ~ＹＯ" style="width:50%;">
                     </div>
                     <div class="form-group">
                         <label for="inputfile">帖子内容</label>
-                        <textarea id="post_conent" class="form-control" rows="5" style="max-width: 100%;min-width: 90%;" placeholder="这里输入内容哟o(*￣▽￣*)ブ"></textarea>
+                        <textarea id="post_content" class="form-control" rows="5" style="max-width: 100%;min-width: 99.99%;min-height: 200px;" placeholder="这里输入内容哟o(*￣▽￣*)ブ" maxlength="21844"></textarea>
                         <p class="help-block">快来分享你的感想!一键轻松记录.</p>
                     </div>
                     <div class="checkbox">
@@ -53,28 +56,38 @@
         //定义所有函数
         post=function(){
             title=$('#title').val()
-            content=$('#post_content').val()
+            post_content=$('#post_content').val()
             if(title==''){
                 alert("标题不能为空！")
                 return false
             }
-            if(content==''){
+            console.log('标题'+title)
+            if(post_content==''){
                 alert("帖子内容不能为空！")
                 return false
             }
+            console.log('内容'+post_content)
             if (confirm('请再次确认是否提交？') == false){
                 return false
             }
             data={
                 'title':title,
-                'content':content
+                'content':post_content
             }
             $.post('/post-content/',data,function(ans){
-                if(ans=='ok'){
-                    alert("发布成功了！✌")
+                console.log(ans)
+                if(ans=="nosession"){
+                    alert("登录后才能发帖哟！")
+                    window.location.replace("/login/");
                 }
-                else{
-                    alert("发布失败了！😭")
+                else {
+                    if(ans=="ok"){
+                        alert("发布成功了！")
+                        window.location.replace("/newpost/");
+                    }
+                    else{
+                        alert("发布失败了！")
+                    }
                 }
             })
         }

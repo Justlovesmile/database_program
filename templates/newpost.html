@@ -30,8 +30,82 @@
                                 </div>
                         </div>
     <div class="content">
+        <div class="content_box">
+            <div class='card'>
+                <p style="text-align: center;font-size: 25px;"><strong>👇最新发帖👇</strong></p>
+            </div>
+            <div id="new_post">
+                <! -- 最新帖子 -->
+            </div>
+        </div>
     </div>
-    <div class="jumbotron text-center" style="margin-top:500px" id="footer">
+
+    <script>
+        comment=function(post_id){
+            id='#'+post_id
+            console.log('点击了'+id)
+            comment_content=$(id).val()
+            data={
+                'post_id':post_id,
+                'content':comment_content
+            }
+            $.post('/comment-content/',data,function(ans){
+                if(ans=='nosession'){
+                    alert("请登录后评论！")
+                    return false
+                }
+                else{
+                    if(ans=='ok'){
+                        alert('评论成功！')
+                    }
+                    else{
+                        alert('评论失败')
+                        return false
+                    }
+                }
+                
+            })
+        }
+
+        get_post=function(){
+            $.post('/get-post/',{},function(ans){
+                all_lines = $.parseJSON(ans)
+                //console.log(ans)
+                for (index in all_lines){
+                    each_line = all_lines[index]
+                    //console.log(each_line)
+                    author_id=each_line[0]
+                    nickname=each_line[1]
+                    post_id=each_line[2]
+                    title=each_line[3]
+                    content=each_line[4]
+                    time=each_line[5]
+                    $('#new_post').append("<div class='card'><a href='/newcomment/'><div style='padding:10px;background-color: #6fc2d0;'>"
+                        +"<p style='font-size:20px;'><strong>"+title+"</strong></p>"
+                        +"<p style='font-size:15px;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;'>"+content+"</p>"
+                        +"<p style='text-align:right;'><small>"+nickname+"</small></p>"
+                        +"<p style='text-align:right;'><small>"+time+"</small></p></div></a>"
+                        +"<textarea id='"+post_id+"' class='form-control' rows='1' style='max-width: 100%;min-width: 99.9999%;min-height: 35px;max-height:70px;' placeholder='我要评论o(*￣▽￣*)ブ'></textarea>"
+                        +"<div align='right' style='position:relative;bottom:10px;top:5px;'>"
+                        +"<button id='commentBtn' class='btn btn-default' onclick='comment("+post_id+")'>评论</button></div></div>");
+                }
+                if (all_lines.length == 0){
+                    alert('查询结果为空')
+            }
+            })
+        }
+
+
+        $(document).ready(function(){
+            get_post()
+        });
+    </script>
+
+
+
+
+
+    <div class="jumbotron text-center" style="margin-top:200px" id="footer">
             <p>哈尔滨工程大学---数据库课程设计---2019</p>
     </div>
 </body>

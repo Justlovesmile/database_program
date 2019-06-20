@@ -72,16 +72,17 @@ ul{
     margin:0;
     padding:0;
 }
-a {
+.menu a {
     color: white;
 }
-    a:focus {
+    .menu a:focus {
         text-decoration: none
     }
-    a:link { text-decoration: none;}
-    a:active { text-decoration:none}
-    a:hover { text-decoration:none;color: #00adb5} 
-    a:visited { text-decoration: none;}
+    .menu a:hover { text-decoration:none;color: #00adb5} 
+a:link { text-decoration: none;}
+a:active { text-decoration:none}
+
+a:visited { text-decoration: none;}
 
 .content{
     margin:10px;
@@ -102,6 +103,21 @@ a {
             margin-top: 10px;
             margin-bottom: 10px;
         }
+        .card a{
+            color:black;
+        }
+        .card a:hover{
+            text-decoration:none;
+        }
+        .card a:focus {
+            text-decoration: none
+        }
+        .card a:link { text-decoration: none;}
+        .card a:active { text-decoration:none}
+        .card a:visited { text-decoration: none;}
+
+
+
             .welcome_img{
                 height: 90%;
                 width: 90%;

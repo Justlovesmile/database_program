@@ -87,8 +87,8 @@ def create_db(conn):
         
         insert into `Comments`(`comment_id`,`post_id`,`content`,`author_id`,`time`) values (1,1,"Oh,This's so nice!I will use this BBS!",1,'{now}');
         
-        create view users_post_info as select user_id,nickname,content,posts.time from users,posts where author_id=user_id;
-        create view users_comment_info as select user_id,nickname,post_id,content,comments.time from users,comments where author_id=user_id;
+        create view users_post_info as select user_id,nickname,post_id,title,content,posts.time from users,posts where author_id=user_id order by post_id desc;
+        create view users_comment_info as select user_id,nickname,post_id,comment_id,content,comments.time from users,comments where author_id=user_id order by comment_id desc;
         create view users_info as select user_id,nickname,sex,email from users;"""
     try:
         a=c_sql.split(';')
