@@ -32,11 +32,154 @@
                 </div>
         </div>
     <div class="content">
+        <div class="content_box">
+            <div class="card">
+                <p style="text-align: center;font-size: 25px;"><strong>👇最新评论👇</strong></p>
+            </div>
+            <div class="card" id="post_box">
+                <p style="padding:10px;"><strong>帖子:</strong></p>
+                <! -- 这里展示选择的帖子 -->
 
+            </div>
+            <div class="card" id="comment_box">
+                <p style="padding:10px;"><strong>评论：</strong></p>
+                <! -- 这里展示最新评论 -->
+
+            </div>
+        </div>
     </div>
     <div class="jumbotron text-center" style="margin-top:500px" id="footer">
             <p>哈尔滨工程大学---数据库课程设计---2019</p>
     </div>
-        
+    <script>
+        //设置session
+        set_session = function (post_id) {
+            data = {
+                'post_id': post_id
+            }
+            $.post('/set-session-postid/', data, function (ans) {
+                if (ans == "ok") {
+                    console.log("添加session成功")
+                    window.location.replace("{{ url_for('comment',name='" + post_id + "')}}");
+                }
+                else {
+                    console.log("添加session失败！")
+                    return false
+                }
+            })
+        }
+        //进行评论的函数
+        comment = function (post_id) {
+            $.post('/check-permission/', {}, function (ans) {
+                if (ans == 'users') {
+                    id = '#' + post_id
+                    console.log('点击了' + id)
+                    comment_content = $(id).val()
+                    if (comment_content == "") {
+                        alert("评论不能为空！")
+                        return false
+                    }
+                    data = {
+                        'post_id': post_id,
+                        'content': comment_content
+                    }
+                    $.post('/comment-content/', data, function (ans) {
+                        if (ans == 'nosession') {
+                            alert("请登录后评论！")
+                            window.location.replace('/login/');
+                            return false
+                        }
+                        else {
+                            if (ans == 'ok') {
+                                alert('评论成功！');
+                                set_session(post_id)
+                            }
+                            else {
+                                alert('评论失败!')
+                                return false
+                            }
+                        }
+
+                    })
+                }
+                else{
+                    alert('管理员就不要评论了！')
+                }
+            })
+        }
+        //获取评论，进行动态添加
+        get_comment=function(post_id){
+            $.post('/get-comment/',{},function(ans){
+                all_lines = $.parseJSON(ans)
+                //console.log(ans)
+                for (index in all_lines){
+                    each_line = all_lines[index]
+                    //console.log(each_line)
+                    author_id=each_line[0]
+                    nickname=each_line[1]
+                    post_id=each_line[2]
+                    comment_id=each_line[3]
+                    content=each_line[4]
+                    time=each_line[5]
+                    $('#comment_box').append("<div class='card'><div style='padding:10px;background-color: #ace7ef;'>"
+                        +"<p style='font-size:15px;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;'>"+content+"</p>"
+                        +"<p style='text-align:right;'><small>"+nickname+"</small></p>"
+                        +"<p style='text-align:right;'><small>"+time+"</small></p></div>"
+                        +"</div>");
+                }
+                if (all_lines.length == 0){
+                    alert('该帖子评论为空！快来评论吧！')
+            }
+            })
+        }
+
+        //获取帖子内容
+        get_post=function(post_id){
+            data={"post_id":post_id}
+            $.post('/get-post/',data,function(ans){
+                all_lines = $.parseJSON(ans)
+                //console.log(ans)
+                for (index in all_lines){
+                    each_line = all_lines[index]
+                    //console.log(each_line)
+                    author_id=each_line[0]
+                    nickname=each_line[1]
+                    post_id=each_line[2]
+                    title=each_line[3]
+                    content=each_line[4]
+                    time=each_line[5]
+                    $('#post_box').append("<div class='card'><div style='padding:10px;background-color: #6fc2d0;'>"
+                        +"<p style='font-size:20px;'><strong>"+title+"</strong></p>"
+                        +"<p style='font-size:15px;'>"+content+"</p>"
+                        +"<p style='text-align:right;'><small>"+nickname+"</small></p>"
+                        +"<p style='text-align:right;'><small>"+time+"</small></p></div>"
+                        +"<textarea id='"+post_id+"' class='form-control' rows='1' style='max-width: 100%;min-width: 99.9999%;min-height: 35px;max-height:70px;' placeholder='我要评论o(*￣▽￣*)ブ'  maxlength='85'></textarea>"
+                        +"<div align='right' style='position:relative;bottom:10px;top:5px;'>"
+                        +"<button id='commentBtn' class='btn btn-default' onclick='comment("+post_id+")'>评论</button></div></div>");
+                }
+                if (all_lines.length == 0){
+                    alert('该帖子已不存在！')
+            }
+            })
+        }
+        //获取session-post-id
+        get_session_post_id=function(){
+            $.post('/get-session-postid/',{},function(ans){
+                if (ans=="error"){
+                    console.log("获取session-post-id失败！")
+                    return false
+                }
+                else{
+                    console.log("获取session-post-id成功！")
+                    get_post(ans)
+                    get_comment(ans)
+                    
+                }
+            })
+        }
+        $(document).ready(function(){
+            get_session_post_id()
+        });
+    </script>
 </body>
 </html>

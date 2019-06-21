@@ -1,53 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <meta http-equiv="X-UA-Compatible" content="ie=edge">
-                <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
-                <link rel="shortcut icon" href="/static/img/logo.png">
-                <script type="text/javascript" src="/static/js/jquery-3.4.1.js"></script>
-                <link rel="stylesheet" href="/static/css/base.css">
-                <script type="text/javascript" src="/static/js/check_session.js"></script>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="shortcut icon" href="/static/img/logo.png">
+        <script type="text/javascript" src="/static/js/jquery-3.4.1.js"></script>
+        <link rel="stylesheet" href="/static/css/base.css">
+        <script type="text/javascript" src="/static/js/check_session.js"></script>
         <title>快速搜索</title>
 </head>
+
 <body>
-                <div class='header'>
-                                <div class="menu">
-                                    <div>
-                                        <ul class="menubar" id="left_nav">
-                                            <li class="menu-value" ><a class="navbar_img" style="font-weight:bold" href="/">
-                                                <img src="/static/img/bbs.png" class="navbar_img"></a><li>
-                                            <li class=""><a href="/"><span class="glyphicon glyphicon-home"></span> 首页</a></li>
-                                            <li class="" ><a href="/newpost/"><span class="glyphicon glyphicon-time"></span> 最新</a></li>
-                                            <li class="" ><a href="/search/"><span class="glyphicon glyphicon-search"></span> 搜索</a></li>
-                                            <li class="" ><a href="/introduce/"><span class="glyphicon glyphicon-info-sign"></span> 说明</a></li>
-                                        </ul>
-                                        <ul class="menubar_right" id="right_nav">
-                                            <li  id="session_check_nav"><a href='/login/'> 登陆</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                        </div>
-    <div class="content">
-        <div class="content_box">
-                <div class='card'>
-                        <div style="margin-left: 70%;">
-                        <form class="form-inline mt-2 mt-md-0">
-                                <input class="form-control" type="text" placeholder="Search" aria-label="Search">
-                                <button class="btn btn-outline-success" type="submit">点击查找</button>
-                        </form>     
-                        </div>   
-                </div>
-                <div class="card">
-                        <div class="search_ans">
-                                <p>这里以后会展示搜索结果！</p>
+        <div class='header'>
+                <div class="menu">
+                        <div>
+                                <ul class="menubar" id="left_nav">
+                                        <li class="menu-value"><a class="navbar_img" style="font-weight:bold" href="/">
+                                                        <img src="/static/img/bbs.png" class="navbar_img"></a>
+                                        <li>
+                                        <li class=""><a href="/"><span class="glyphicon glyphicon-home"></span> 首页</a>
+                                        </li>
+                                        <li class=""><a href="/newpost/"><span class="glyphicon glyphicon-time"></span>
+                                                        最新</a></li>
+                                        <li class=""><a href="/search/"><span class="glyphicon glyphicon-search"></span>
+                                                        搜索</a></li>
+                                        <li class=""><a href="/introduce/"><span
+                                                                class="glyphicon glyphicon-info-sign"></span> 说明</a>
+                                        </li>
+                                </ul>
+                                <ul class="menubar_right" id="right_nav">
+                                        <li id="session_check_nav"><a href='/login/'> 登陆</a></li>
+                                </ul>
                         </div>
                 </div>
         </div>
-    </div>
-    <div class="jumbotron text-center" style="margin-top:500px" id="footer">
-            <p>哈尔滨工程大学---数据库课程设计---2019</p>
-    </div>
+        <div class="content">
+                <div class="content_box">
+                        <div class='card'><p style='text-align: center;font-size: 25px;'><strong>👇输入关键字查询👇</strong></p></div>
+                        <div class='card' align="center">
+                                <form class="form-inline mt-2 mt-md-0" style="width:40%;">
+                                        <select class="form-control" id="search_key">
+                                                <option value="nickname">搜索用户</option>
+                                                <option value="title">搜索帖子标题</option>
+                                                <option value="content">搜索内容</option>
+                                        </select>
+                                        <input class="form-control" type="text" placeholder="请输入搜索关键字。"
+                                                id="search_value">
+                                        <! -- 在form中添加button如果不设置type='button' 的话会提交两次，谨记！！谨记！！ -->
+                                                <button class="btn btn-outline-success" id="searchBtn"
+                                                        type="button">点击查找</button>
+                                </form>
+                        </div>
+                        <div class="card">
+                                <p id='search_ans_title'><strong>搜索结果:</strong></p>
+                                <div id="search_ans">
+                                        <! -- 展示结果 -->
+                                </div>
+                        </div>
+                </div>
+        </div>
+        <script>
+                //设置session['post_id']
+                set_session = function (post_id) {
+                        data = {
+                                'post_id': post_id
+                        }
+                        $.post('/set-session-postid/', data, function (ans) {
+                                if (ans == "ok") {
+                                        console.log("添加session成功")
+                                        window.location.replace("{{ url_for('comment',name='" + post_id + "')}}");
+                                }
+                                else {
+                                        console.log("添加session失败！")
+                                        return false
+                                }
+                        })
+                }
+
+                //获取表单中的搜索信息
+                get_search_key = function () {
+                        key = $('#search_key option:selected').val()
+                        value = $('#search_value').val()
+                        if (value == '') {
+                                alert('搜索关键字不能为空！')
+                                return false
+                        }
+                        data = {
+                                'key': key,
+                                'value': value
+                        }
+                        //console.log(data)
+                        $.post('/search-key/', data, function (ans) {
+                                $('#search_ans').empty();
+                                //console.log(ans)
+                                if (ans == "empty") {
+                                        alert("搜索结果为空！")
+                                        return false
+                                }
+                                else {
+                                        //alert("找到搜索结果！")
+                                        all_lines = $.parseJSON(ans)
+                                        var index;
+                                        for (index in all_lines) {
+                                                each_line = all_lines[index]
+                                                //console.log(each_line)
+                                                author_id = each_line[0]
+                                                nickname = each_line[1]
+                                                post_id = each_line[2]
+                                                title = each_line[3]
+                                                content = each_line[4]
+                                                time = each_line[5]
+                                                if (typeof title == "number") {
+                                                        $('#search_ans').append("<div class='card'><a href='javascript:void(0);' onclick='set_session(" + post_id + ")'>"
+                                                                + "<div style='padding:10px;background-color: #6fc2d0;'>"
+                                                                + "<p style='font-size:15px;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;'>" + content + "</p>"
+                                                                + "<p style='text-align:right;'><small>" + nickname + "</small></p>"
+                                                                + "<p style='text-align:right;'><small>" + time + "</small></p></div></a>"
+                                                                + "</div>");
+                                                }
+                                                else {
+                                                        $('#search_ans').append("<div class='card'><a href='javascript:void(0);' onclick='set_session(" + post_id + ")'>"
+                                                                + "<div style='padding:10px;background-color: #a6acec;'>"
+                                                                + "<p style='font-size:20px;'><strong>" + title + "</strong></p>"
+                                                                + "<p style='font-size:15px;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;'>" + content + "</p>"
+                                                                + "<p style='text-align:right;'><small>" + nickname + "</small></p>"
+                                                                + "<p style='text-align:right;'><small>" + time + "</small></p></div></a>"
+                                                                + "</div>");
+                                                }
+                                        }
+                                        //index是字符串
+                                        index=$.parseJSON(index)+1
+                                        $('#search_ans_title').html('<strong>搜索结果: 共计'+index+'条</strong>')
+                                }
+                        })
+                }
+
+                //定义点击搜索按钮的触发事件
+                $('#searchBtn').click(function () {
+                        get_search_key()
+                })
+
+        </script>
+        <div class="jumbotron text-center" style="margin-top:500px" id="footer">
+                <p>哈尔滨工程大学---数据库课程设计---2019</p>
+        </div>
 </body>
+
 </html>
