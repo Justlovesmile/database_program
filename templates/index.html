@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,23 +12,25 @@
     <script type="text/javascript" src="/static/js/check_session.js"></script>
     <title>Welcome to XMJ_BBS!</title>
 </head>
+
 <body>
     <div class='header'>
-            <div class="menu">
-                <div>
-                    <ul class="menubar" id="left_nav">
-                        <li class="menu-value" ><a class="navbar_img" style="font-weight:bold" href="/">
-                            <img src="/static/img/bbs.png" class="navbar_img"></a><li>
-                        <li class=""><a href="/"><span class="glyphicon glyphicon-home"></span> 首页</a></li>
-                        <li class="" ><a href="/newpost/"><span class="glyphicon glyphicon-time"></span> 最新</a></li>
-                        <li class="" ><a href="/search/"><span class="glyphicon glyphicon-search"></span> 搜索</a></li>
-                        <li class="" ><a href="/introduce/"><span class="glyphicon glyphicon-info-sign"></span> 说明</a></li>
-                    </ul>
-                    <ul class="menubar_right" id="right_nav">
-                        <li  id="session_check_nav"><a href='/login/'> 登陆</a></li>
-                    </ul>
-                </div>
+        <div class="menu">
+            <div>
+                <ul class="menubar" id="left_nav">
+                    <li class="menu-value"><a class="navbar_img" style="font-weight:bold" href="/">
+                            <img src="/static/img/bbs.png" class="navbar_img"></a>
+                    <li>
+                    <li class=""><a href="/"><span class="glyphicon glyphicon-home"></span> 首页</a></li>
+                    <li class=""><a href="/newpost/"><span class="glyphicon glyphicon-time"></span> 最新</a></li>
+                    <li class=""><a href="/search/"><span class="glyphicon glyphicon-search"></span> 搜索</a></li>
+                    <li class=""><a href="/introduce/"><span class="glyphicon glyphicon-info-sign"></span> 说明</a></li>
+                </ul>
+                <ul class="menubar_right" id="right_nav">
+                    <li id="session_check_nav"><a href='/login/'> 登陆</a></li>
+                </ul>
             </div>
+        </div>
     </div>
     <div class="content">
         <div class="content_box">
@@ -36,75 +39,87 @@
             </div>
             <div class="card">
                 <div style='padding:10px;background-color: #6fc2d0;border-radius:7px;'>
-                <form role="form">
-                    <div class="form-group">
-                        <label for="title">标题</label>
-                            <input type="text" class="form-control" id="title" maxlength="20" placeholder="这里输入标题哟(＾Ｕ＾)ノ~ＹＯ" style="width:50%;">
-                    </div>
-                    <div class="form-group">
-                        <label for="inputfile">帖子内容</label>
-                        <textarea id="post_content" class="form-control" rows="5" style="max-width: 100%;min-width: 99.99%;min-height: 200px;" placeholder="这里输入内容哟o(*￣▽￣*)ブ" maxlength="21844"></textarea>
-                        <p class="help-block" align="right">快来分享你的感想!一键轻松记录.</p>
-                    </div>
-                    <div class="checkbox">
-                    </div>
-                    <div align="right">
-                        <button id="postBtn" class="btn btn-default">分享</button>
-                    </div>
-                </form>
+                    <form role="form">
+                        <div class="form-group">
+                            <label for="title">标题</label>
+                            <input type="text" class="form-control" id="title" maxlength="30"
+                                placeholder="这里输入标题哟(＾Ｕ＾)ノ~ＹＯ" style="width:50%;">
+                        </div>
+                        <div class="form-group">
+                            <label for="inputfile">帖子内容</label>
+                            <textarea id="post_content" class="form-control" rows="5"
+                                style="max-width: 100%;min-width: 99.99%;min-height: 200px;"
+                                placeholder="这里输入内容哟o(*￣▽￣*)ブ" maxlength="21844"></textarea>
+                            <p class="help-block" align="right">快来分享你的感想!一键轻松记录.</p>
+                        </div>
+                        <div class="checkbox">
+                        </div>
+                        <div align="right">
+                            <button id="postBtn" class="btn btn-default">分享</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
     <script>
         //定义所有函数
-        post=function(){
-            title=$('#title').val()
-            post_content=$('#post_content').val()
-            if(title==''){
-                alert("标题不能为空！")
-                return false
-            }
-            console.log('标题'+title)
-            if(post_content==''){
-                alert("帖子内容不能为空！")
-                return false
-            }
-            console.log('内容'+post_content)
-            if (confirm('请再次确认是否提交？') == false){
-                return false
-            }
-            data={
-                'title':title,
-                'content':post_content
-            }
-            $.post('/post-content/',data,function(ans){
-                console.log(ans)
-                if(ans=="nosession"){
-                    alert("登录后才能发帖哟！")
-                    window.location.replace("/login/");
+        post = function () {
+            $.post('/check-permission/', {}, function (ans) {
+                if (ans == 'users') {
+                    title = $('#title').val()
+                    post_content = $('#post_content').val()
+                    if (title == '') {
+                        alert("标题不能为空！")
+                        return false
+                    }
+                    console.log('标题' + title)
+                    if (post_content == '') {
+                        alert("帖子内容不能为空！")
+                        return false
+                    }
+                    console.log('内容' + post_content)
+                    if (confirm('请再次确认是否提交？') == false) {
+                        return false
+                    }
+                    data = {
+                        'title': title,
+                        'content': post_content
+                    }
+                    $.post('/post-content/', data, function (ans) {
+                        console.log(ans)
+                        if (ans == "nosession") {
+                            alert("登录后才能发帖哟！")
+                            window.location.replace("/login/");
+                        }
+                        else {
+                            if (ans == "ok") {
+                                alert("发布成功了！")
+                                window.location.replace("/newpost/");
+                            }
+                            else {
+                                alert("发布失败了！")
+                            }
+                        }
+                    })
                 }
-                else {
-                    if(ans=="ok"){
-                        alert("发布成功了！")
-                        window.location.replace("/newpost/");
-                    }
-                    else{
-                        alert("发布失败了！")
-                    }
+                else{
+                    alert('管理员就不要发布帖子了！');
                 }
             })
         }
         //定义所有触发事件
-        $('#postBtn').click(function(){
+        $('#postBtn').click(function () {
             post()
         })
-    </script>
-    <div class="jumbotron text-center" style="margin-top:500px" id="footer">
-            <p>哈尔滨工程大学---数据库课程设计---2019</p>
-    </div>
-</body>
-    <script>
 
     </script>
+    <div class="jumbotron text-center" style="margin-top:500px" id="footer">
+        <p>哈尔滨工程大学---数据库课程设计---2019</p>
+    </div>
+</body>
+<script>
+
+</script>
+
 </html>

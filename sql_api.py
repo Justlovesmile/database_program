@@ -40,7 +40,7 @@ def select_str_db(table,need,key,value):
     conn=connect_db()
     cursor=conn.cursor()
     s_sql=f"select {need} from {table} where {key}='{value}';" 
-    #print(s_sql)
+    print(s_sql)
     try:
         ans=cursor.fetchmany(cursor.execute(s_sql))    
     except:
@@ -158,7 +158,7 @@ def insert_comments(post_id,content,author_id):
     conn=connect_db()
     cursor=conn.cursor()
     i_sql=f"insert into comments (post_id,content,author_id,time) values ({post_id},'{content}',{author_id},'{now}');"
-    print(i_sql)
+    #print(i_sql)
     try:
         cursor.execute(i_sql)
         conn.commit()
@@ -176,7 +176,7 @@ def delete_db(table,key,value):
     conn=connect_db()
     cursor=conn.cursor()
     d_sql=f"delete from {table} where {key}={value};"
-    print(d_sql)
+    #print(d_sql)
     try:
         cursor.execute(d_sql)
         conn.commit()
@@ -189,16 +189,11 @@ def delete_db(table,key,value):
         return "ok"
 
 #更新数据函数，暂时还没用上
-def update_db(table,**data):
+def update_db(u_sql):
     #修改数据
     conn=connect_db()
     cursor=conn.cursor()
-    key1=tuple(data.keys())[0]
-    value1=tuple(data.values())[0]
-    key2=tuple(data.keys())[1]
-    value2=tuple(data.values())[1]
-    u_sql=f"update {table} set {key1}={value1} where {key2}={value2};"
-    #print(d_sql)
+    print(u_sql)
     try:
         cursor.execute(u_sql)
         conn.commit()

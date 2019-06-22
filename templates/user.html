@@ -36,12 +36,33 @@
     </div>
     <div class="content" style="display: block;">
         <main class='content_box' style="overflow:hidden;">
-            <div class='card' style='float:right !important;width:25%;margin-bottom: 10px;'>
+            <div class='card' style='float:right !important;width:25%;margin-bottom: 10px;' id='user_img'>
                 <img src="/static/img/user_img.jpeg" alt="用户头像" class="img-thumbnail">
             </div>
             <div class='card' style='float:right !important;width:75%;margin-bottom: 10px;'>
                 <div class='card' id='user_nickname'>
                     <! -- 用户昵称 -->
+                </div>
+                <div id='update_box' class='card' style='display: none;'>
+                    <! -- 用户修改框 -->
+                        <table class='table table-havor'>
+                            <thead>
+                                <tr>
+                                    <th>用户名</th>
+                                    <th>姓  名</th>
+                                    <th>性  别</th>
+                                    <th>邮  箱</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input id='nickname_input' maxlength="20"></td>
+                                    <td><input id='name_input' maxlength="20"></td>
+                                    <td><input id='sex_input' maxlength="20"></td>
+                                    <td><input id='email_input' maxlength="20"></td>
+                                </tr>
+                            </tbody>"
+                        </table>
                 </div>
                 <div class='card' id='user_info'>
                     <! -- 用户信息 -->
@@ -54,35 +75,74 @@
         </main>
     </div>
     <script>
-        //删除帖子函数
-        delete_post=function(post_id){
+        //更新数据的函数
+        update_show = function () {
+            $('#update_box').attr('style','display:block;')
+            $('#updateBtn').text('提交')
+            $('#updateBtn').attr('onclick','update_push()')
+        }
+        update_push=function(){
+            nickname = $('#nickname_input').val()
+            name = $('#name_input').val()
+            sex = $('#sex_input').val()
+            email = $('#email_input').val()
             data={
-                'id':post_id,
-                'table':'posts'
+                'nickname':nickname,
+                'name':name,
+                'sex':sex,
+                'email':email
             }
-            $.post('/delete/',data,function(ans){
+            //console.log(data)
+            if(confirm('请再次确认修改！')==false){
+                $('#update_box').attr('style','display:none;')
+                return false
+            }
+            $.post('/update/',data,function(ans){
                 if(ans=='ok'){
-                    alert('删除成功！')
+                    alert('修改成功！')
                     location.reload()
                 }
                 else{
+                    alert('修改失败！可能用户名已存在！')
+                    return false
+                }
+            })
+        }
+        //删除帖子函数
+        delete_post = function (post_id) {
+            if (confirm("请再次确认是否删除") == false) {
+                return false
+            }
+            data = {
+                'id': post_id,
+                'table': 'posts'
+            }
+            $.post('/delete/', data, function (ans) {
+                if (ans == 'ok') {
+                    alert('删除帖子成功！')
+                    location.reload()
+                }
+                else {
                     alert('很奇怪！删除失败了！')
                 }
             })
 
         }
         //删除评论函数
-        delete_comment=function(comment_id){
-            data={
-                'id':comment_id,
-                'table':'comments'
+        delete_comment = function (comment_id) {
+            if (confirm("请再次确认是否删除") == false) {
+                return false
             }
-            $.post('/delete/',data,function(ans){
-                if(ans=='ok'){
-                    alert('删除成功！')
+            data = {
+                'id': comment_id,
+                'table': 'comments'
+            }
+            $.post('/delete/', data, function (ans) {
+                if (ans == 'ok') {
+                    alert('删除评论成功！')
                     location.reload()
                 }
-                else{
+                else {
                     alert('很奇怪！删除失败了！')
                 }
             })
@@ -103,138 +163,92 @@
                 }
             })
         }
-        //
+        //动态设置
+        set_div = function (ans) {
+            $('#search_ans').empty();
+            //console.log(ans)
+            if (ans == "empty") {
+                alert("很奇怪!记录为空！")
+                return false
+            }
+            else {
+                //alert("找到搜索结果！")
+                all_lines = $.parseJSON(ans)
+                var index;
+                for (index in all_lines) {
+                    each_line = all_lines[index]
+                    //console.log(each_line)
+                    author_id = each_line[0]
+                    nickname = each_line[1]
+                    post_id = each_line[2]
+                    title = each_line[3]
+                    content = each_line[4]
+                    time = each_line[5]
+                    if (typeof title == "number") {
+                        $('#search_ans').append("<div class='card'><a href='javascript:void(0);' onclick='set_session(" + post_id + ")'>"
+                            + "<div style='padding:10px;background-color: #6fc2d0;'>"
+                            + "<p style='font-size:15px;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;'>" + content + "</p>"
+                            + "<p style='text-align:right;'><small>" + nickname + "</small></p>"
+                            + "<p style='text-align:right;'><small>" + time + "</small></p></div></a>"
+                            + "<div align='right' style='position:relative;bottom:10px;top:5px;'>"
+                            + "<button id='deleteBtn' class='btn btn-default' onclick='delete_comment(" + title + ")'>删除</button></div>"
+                            + "</div>");
+                    }
+                    else {
+                        $('#search_ans').append("<div class='card'><a href='javascript:void(0);' onclick='set_session(" + post_id + ")'>"
+                            + "<div style='padding:10px;background-color: #a6acec;'>"
+                            + "<p style='font-size:20px;'><strong>" + title + "</strong></p>"
+                            + "<p style='font-size:15px;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;'>" + content + "</p>"
+                            + "<p style='text-align:right;'><small>" + nickname + "</small></p>"
+                            + "<p style='text-align:right;'><small>" + time + "</small></p></div></a>"
+                            + "<div align='right' style='position:relative;bottom:10px;top:5px;'>"
+                            + "<button id='deleteBtn' class='btn btn-default' onclick='delete_post(" + post_id + ")'>删除</button></div>"
+                            + "</div>");
+                    }
+                    //index是字符
+                    index = $.parseJSON(index) + 1
+                    $('#search_ans_title').html('<strong>可操作记录: 共计' + index + '条</strong>')
+                }
+            }
+        }
+        //获取用户信息
         get_user_info = function () {
             $.post('/check-session/', {}, function (nickname) {
                 if (nickname == "") {
                     return false
                     alert('用户未登录！')
                 }
-                else {
-                    $.post('/check-permission/', {}, function (ans) {
-                        if (ans == 'users') {
-                            //是普通用户
-                            $.post('/get-user-info/', { 'nickname': nickname }, function (ans) {
-                                all_lines = $.parseJSON(ans)
-                                eachline = all_lines[0]
-                                nickname = eachline[1]
-                                name = eachline[2]
-                                sex = eachline[3]
-                                email = eachline[4]
-                                permission_level = eachline[5]
-                                $('#user_nickname').append("<p style='text-align:center;'>欢迎：<strong>" + nickname + "</strong></p>")
-                                $('#user_info').append("<table class='table table-havor'><thead><tr><th>姓名</th><th>性别</th><th>邮箱</th></tr></thead>"
-                                    + "<tbody><tr><td>" + name + "</td><td>" + sex + "</td><td>" + email + "</td></tr></tbody>"
-                                    + "</table>")
-
+                else {   
+                    $.post('/get-user-info/', { 'nickname': nickname }, function (ans) {
+                        all_lines = $.parseJSON(ans)
+                        eachline = all_lines[0]
+                        nickname = eachline[1]
+                        name = eachline[2]
+                        sex = eachline[3]
+                        email = eachline[4]
+                        permission_level = eachline[5]
+                        $('#user_nickname').append("<div style='text-align:center;'>欢迎：<strong>" + nickname + "</strong><div align='right'><button id='updateBtn' type='button' class='btn btn-default' onclick='update_show()'>修改</button></div></div>")
+                        $('#user_info').append("<table class='table table-havor'><thead><tr><th>姓名</th><th>性别</th><th>邮箱</th></tr></thead>"
+                            + "<tbody><tr><td>" + name + "</td><td>" + sex + "</td><td>" + email + "</td></tr></tbody>"
+                            + "</table>")
+                        $('#nickname_input').attr('value',nickname)
+                        $('#name_input').attr('value',name)
+                        $('#sex_input').attr('value',sex)
+                        $('#email_input').attr('value',email)
+                        $.post('/check-permission/', {}, function (ans) {
+                            if (ans == 'users') {
+                                //是普通用户
                                 $.post('/get-user-post-comment/', { 'key': 'nickname', 'value': nickname }, function (ans) {
-                                    $('#search_ans').empty();
-                                    //console.log(ans)
-                                    if (ans == "empty") {
-                                        alert("您的记录为空！")
-                                        return false
-                                    }
-                                    else {
-                                        //alert("找到搜索结果！")
-                                        all_lines = $.parseJSON(ans)
-                                        var index;
-                                        for (index in all_lines) {
-                                            each_line = all_lines[index]
-                                            //console.log(each_line)
-                                            author_id = each_line[0]
-                                            nickname = each_line[1]
-                                            post_id = each_line[2]
-                                            title = each_line[3]
-                                            content = each_line[4]
-                                            time = each_line[5]
-                                            if (typeof title == "number") {
-                                                $('#search_ans').append("<div class='card'><a href='javascript:void(0);' onclick='set_session(" + post_id + ")'>"
-                                                    + "<div style='padding:10px;background-color: #6fc2d0;'>"
-                                                    + "<p style='font-size:15px;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;'>" + content + "</p>"
-                                                    + "<p style='text-align:right;'><small>" + nickname + "</small></p>"
-                                                    + "<p style='text-align:right;'><small>" + time + "</small></p></div></a>"
-                                                    + "<div align='right' style='position:relative;bottom:10px;top:5px;'>"
-                                                    + "<button id='deleteBtn' class='btn btn-default' onclick='delete_comment("+title+")'>删除</button></div>"
-                                                    + "</div>");
-                                            }
-                                            else {
-                                                $('#search_ans').append("<div class='card'><a href='javascript:void(0);' onclick='set_session(" + post_id + ")'>"
-                                                    + "<div style='padding:10px;background-color: #a6acec;'>"
-                                                    + "<p style='font-size:20px;'><strong>" + title + "</strong></p>"
-                                                    + "<p style='font-size:15px;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;'>" + content + "</p>"
-                                                    + "<p style='text-align:right;'><small>" + nickname + "</small></p>"
-                                                    + "<p style='text-align:right;'><small>" + time + "</small></p></div></a>"
-                                                    + "<div align='right' style='position:relative;bottom:10px;top:5px;'>"
-                                                    + "<button id='deleteBtn' class='btn btn-default' onclick='delete_post("+post_id+")'>删除</button></div>"
-                                                    + "</div>");
-                                            }
-                                        }
-                                        //index是字符串
-                                        index = $.parseJSON(index) + 1
-                                        $('#search_ans_title').html('<strong>所有记录: 共计' + index + '条</strong>')
-                                    }
+                                    set_div(ans)
                                 })
-                            })
-                        }
-                        else {
-                            //如果是管理员
-                            $.post('/get-user-info/', { 'nickname': nickname }, function (ans) {
-                                all_lines = $.parseJSON(ans)
-                                eachline = all_lines[0]
-                                nickname = eachline[1]
-                                name = eachline[2]
-                                permission_level = eachline[3]
-                                $('#user_nickname').append("<p style='text-align:center;'>欢迎：<strong>" + nickname + "</strong></p>")
-                                $('#user_info').append("<table class='table table-havor'><thead><tr><th>姓名</th><th>性别</th><th>身份</th></tr></thead>"
-                                    + "<tbody><tr><td>" + name + "</td><td>未知</td><td>管理员</td></tr></tbody>"
-                                    + "</table>")
-
-                                $.post('/get-post/', {}, function (ans) {
-                                    $('#search_ans').empty();
-                                    //console.log(ans)
-                                    if (ans == "empty") {
-                                        alert("很奇怪!记录为空！")
-                                        return false
-                                    }
-                                    else {
-                                        //alert("找到搜索结果！")
-                                        all_lines = $.parseJSON(ans)
-                                        var index;
-                                        for (index in all_lines) {
-                                            each_line = all_lines[index]
-                                            //console.log(each_line)
-                                            author_id = each_line[0]
-                                            nickname = each_line[1]
-                                            post_id = each_line[2]
-                                            title = each_line[3]
-                                            content = each_line[4]
-                                            time = each_line[5]
-                                            if (typeof title == "number") {
-                                                $('#search_ans').append("<div class='card'><a href='javascript:void(0);' onclick='set_session(" + post_id + ")'>"
-                                                    + "<div style='padding:10px;background-color: #6fc2d0;'>"
-                                                    + "<p style='font-size:15px;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;'>" + content + "</p>"
-                                                    + "<p style='text-align:right;'><small>" + nickname + "</small></p>"
-                                                    + "<p style='text-align:right;'><small>" + time + "</small></p></div></a>"
-                                                    + "</div>");
-                                            }
-                                            else {
-                                                $('#search_ans').append("<div class='card'><a href='javascript:void(0);' onclick='set_session(" + post_id + ")'>"
-                                                    + "<div style='padding:10px;background-color: #a6acec;'>"
-                                                    + "<p style='font-size:20px;'><strong>" + title + "</strong></p>"
-                                                    + "<p style='font-size:15px;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;'>" + content + "</p>"
-                                                    + "<p style='text-align:right;'><small>" + nickname + "</small></p>"
-                                                    + "<p style='text-align:right;'><small>" + time + "</small></p></div></a>"
-                                                    + "</div>");
-                                            }
-                                        }
-                                        //index是字符串
-                                        index = $.parseJSON(index) + 1
-                                        $('#search_ans_title').html('<strong>用户记录: 共计' + index + '条</strong>')
-                                    }
+                            }
+                            else {
+                                //如果是管理员
+                                $.post('/get-user-post-comment/', {}, function (ans) {
+                                    set_div(ans)
                                 })
-                            })
-
-                        }
+                            }
+                        })
                     })
                 }
             })

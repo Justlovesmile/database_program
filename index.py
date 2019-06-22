@@ -4,7 +4,6 @@ import time
 from datetime import timedelta,datetime
 from check import check_db
 import sql_api
-import main
 import os
 import json 
 
@@ -151,7 +150,7 @@ def commment_content():
         author_id=sql_api.select_str_db('users','user_id','nickname',session.get('nickname'))[0][0]
         #print('author_id',author_id)
         ans=sql_api.insert_comments(post_id,content,author_id)
-        print(ans)
+        #print(ans)
         return ans
     else:
         #print('error')
@@ -185,7 +184,7 @@ def search_key():
         for i in eachline(ans2):
             answers.append(i)
     #print('你输入了',value)
-    print('ans',answers)
+    #print('ans',answers)
     if len(answers)==0:
         return "empty"
     return json.dumps(answers)
@@ -202,21 +201,33 @@ def get_user_info():
 #获取用户记录
 @app.route('/get-user-post-comment/',methods=['GET','POST'])
 def get_user_post_comment():
-    key=request.form.get('key')
-    value= request.form.get('value')
-    #获取用户全部帖子信息
-    ans1=sql_api.select_mohu('users_post_info',key,value)
-    answers=eachline(ans1)
-    #获取用户全部评论信息
-    ans2=sql_api.select_mohu('users_comment_info',key,value)
-    #print('返回的信息：',ans2)
-    for i in eachline(ans2):
-        answers.append(i)
-    #print('你输入了',value)
-    #print('ans',answers)
-    if len(answers)==0:
-        return "empty"
-    return json.dumps(answers)
+    if session['table']=='users':
+        key=request.form.get('key')
+        value= request.form.get('value')
+        #获取用户全部帖子信息
+        ans1=sql_api.select_all_bystr('users_post_info',key,value)
+        answers=eachline(ans1)
+        #获取用户全部评论信息
+        ans2=sql_api.select_all_bystr('users_comment_info',key,value)
+        #print('返回的信息：',ans2)
+        for i in eachline(ans2):
+            answers.append(i)
+        #print('你输入了',value)
+        #print('ans',answers)
+        if len(answers)==0:
+            return "empty"
+        return json.dumps(answers)
+    else:
+        ans1=sql_api.select_all_bynum('users_post_info',1,1)
+        #print(ans1)
+        answers=eachline(ans1)
+        ans2=sql_api.select_all_bynum('users_comment_info',1,1)
+        for i in eachline(ans2):
+            answers.append(i)
+        if len(answers)==0:
+            return "empty"
+        return json.dumps(answers)
+
 
 #执行删除操作
 @app.route('/delete/',methods=['GET','POST'])
@@ -228,6 +239,22 @@ def delete():
         ans=sql_api.delete_db('comments','comment_id',request.form.get('id'))
         return ans
 
+#执行更新操作
+@app.route('/update/',methods=['GET','POST'])
+def update():
+    nickname=request.form.get('nickname')
+    name=request.form.get('name')
+    sex=request.form.get('sex')
+    email=request.form.get('email')
+    if session['table']=='users':
+        user_id=sql_api.select_str_db('users','user_id','nickname',session['nickname'])[0][0]
+        u_sql=f"update users set nickname='{nickname}',name='{name}',sex='{sex}',email='{email}' where user_id={user_id};"
+    else:
+        user_id=sql_api.select_str_db('administrators','Admin_id','nickname',session['nickname'])[0][0]
+        u_sql=f"update administrators set nickname='{nickname}',name='{name}',sex='{sex}',email='{email}' where Admin_id={user_id};"
+    ans=sql_api.update_db(u_sql)
+    session['nickname']=nickname
+    return ans
 #进入简介页面
 @app.route('/introduce/',methods=['GET','POST'])
 def introduce():

@@ -62,26 +62,20 @@
         }
 
         comment = function (post_id) {
+            id = '#' + post_id
+            console.log('点击了' + id)
+            comment_content = $(id).val()
+            if (comment_content == "") {
+                alert("评论不能为空！")
+                return false
+            }
+            data = {
+                'post_id': post_id,
+                'content': comment_content
+            }
             $.post('/check-permission/', {}, function (ans) {
                 if (ans == 'users') {
-                    id = '#' + post_id
-                    console.log('点击了' + id)
-                    comment_content = $(id).val()
-                    if (comment_content == "") {
-                        alert("评论不能为空！")
-                        return false
-                    }
-                    data = {
-                        'post_id': post_id,
-                        'content': comment_content
-                    }
                     $.post('/comment-content/', data, function (ans) {
-                        if (ans == 'nosession') {
-                            alert("请登录后评论！")
-                            window.location.replace('/login/');
-                            return false
-                        }
-                        else {
                             if (ans == 'ok') {
                                 alert('评论成功！');
                                 set_session(post_id)
@@ -90,12 +84,14 @@
                                 alert('评论失败!')
                                 return false
                             }
-                        }
-
                     })
                 }
-                else{
+                else if (ans=='administrators'){
                     alert('管理员就不要评论了！')
+                }
+                else{
+                    alert('请先登录再评论');
+                    window.location.replace('/login/')
                 }
 
             })
