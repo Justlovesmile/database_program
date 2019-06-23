@@ -38,6 +38,7 @@
         <main class='content_box' style="overflow:hidden;">
             <div class='card' style='float:right !important;width:25%;margin-bottom: 10px;' id='user_img'>
                 <img src="/static/img/user_img.jpeg" alt="用户头像" class="img-thumbnail">
+                <a href='/tongji/'><p style='text-align: center; margin-top: 10px;color:#00adb5;'><strong>点击查看统计</strong></p></a>
             </div>
             <div class='card' style='float:right !important;width:75%;margin-bottom: 10px;'>
                 <div class='card' id='user_nickname'>
@@ -45,23 +46,34 @@
                 </div>
                 <div id='update_box' class='card' style='display: none;'>
                     <! -- 用户修改框 -->
-                        <table class='table table-havor'>
-                            <thead>
+                        <table class='table table-havor' style="color:mediumvioletred;">
+                            <tbody>
                                 <tr>
                                     <th>用户名</th>
-                                    <th>姓  名</th>
-                                    <th>性  别</th>
-                                    <th>邮  箱</th>
+                                    <th>姓 名</th>
                                 </tr>
-                            </thead>
-                            <tbody>
                                 <tr>
                                     <td><input id='nickname_input' maxlength="20"></td>
                                     <td><input id='name_input' maxlength="20"></td>
+                                </tr>
+
+                                <tr>
+                                    <th>密 码</th>
+                                    <th>再次输入密码</th>
+                                </tr>
+                                <tr>
+                                    <td><input id='passwd_input1' maxlength="20" type='password'></td>
+                                    <td><input id='passwd_input2' maxlength="20" type='password'></td>
+                                </tr>
+                                <tr>
+                                    <th>性 别</th>
+                                    <th>邮 箱</th>
+                                </tr>
+                                <tr>
                                     <td><input id='sex_input' maxlength="20"></td>
                                     <td><input id='email_input' maxlength="20"></td>
                                 </tr>
-                            </tbody>"
+                            </tbody>
                         </table>
                 </div>
                 <div class='card' id='user_info'>
@@ -77,32 +89,43 @@
     <script>
         //更新数据的函数
         update_show = function () {
-            $('#update_box').attr('style','display:block;')
+            $('#update_box').attr('style', 'display:block;')
             $('#updateBtn').text('提交')
-            $('#updateBtn').attr('onclick','update_push()')
+            $('#updateBtn').attr('onclick', 'update_push()')
         }
-        update_push=function(){
+        update_push = function () {
             nickname = $('#nickname_input').val()
             name = $('#name_input').val()
             sex = $('#sex_input').val()
             email = $('#email_input').val()
-            data={
-                'nickname':nickname,
-                'name':name,
-                'sex':sex,
-                'email':email
-            }
-            //console.log(data)
-            if(confirm('请再次确认修改！')==false){
-                $('#update_box').attr('style','display:none;')
+            passwd1 = $('#passwd_input1').val()
+            passwd2 = $('#passwd_input2').val()
+            if (sex != '男' && sex != '女') {
+                alert('性别请填写 (男) 或 (女) ！')
                 return false
             }
-            $.post('/update/',data,function(ans){
-                if(ans=='ok'){
+            if (passwd1 != passwd2) {
+                alert('两次输入的密码不一样！')
+                return false
+            }
+            //console.log(data)
+            if (confirm('请再次确认修改！') == false) {
+                $('#update_box').attr('style', 'display:none;')
+                return false
+            }
+            data = {
+                'nickname': nickname,
+                'name': name,
+                'sex': sex,
+                'email': email,
+                'passwd':passwd1
+            }
+            $.post('/update/', data, function (ans) {
+                if (ans == 'ok') {
                     alert('修改成功！')
                     location.reload()
                 }
-                else{
+                else {
                     alert('修改失败！可能用户名已存在！')
                     return false
                 }
@@ -218,7 +241,7 @@
                     return false
                     alert('用户未登录！')
                 }
-                else {   
+                else {
                     $.post('/get-user-info/', { 'nickname': nickname }, function (ans) {
                         all_lines = $.parseJSON(ans)
                         eachline = all_lines[0]
@@ -231,10 +254,10 @@
                         $('#user_info').append("<table class='table table-havor'><thead><tr><th>姓名</th><th>性别</th><th>邮箱</th></tr></thead>"
                             + "<tbody><tr><td>" + name + "</td><td>" + sex + "</td><td>" + email + "</td></tr></tbody>"
                             + "</table>")
-                        $('#nickname_input').attr('value',nickname)
-                        $('#name_input').attr('value',name)
-                        $('#sex_input').attr('value',sex)
-                        $('#email_input').attr('value',email)
+                        $('#nickname_input').attr('value', nickname)
+                        $('#name_input').attr('value', name)
+                        $('#sex_input').attr('value', sex)
+                        $('#email_input').attr('value', email)
                         $.post('/check-permission/', {}, function (ans) {
                             if (ans == 'users') {
                                 //是普通用户

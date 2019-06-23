@@ -246,12 +246,19 @@ def update():
     name=request.form.get('name')
     sex=request.form.get('sex')
     email=request.form.get('email')
+    passwd=request.form.get('passwd')
     if session['table']=='users':
         user_id=sql_api.select_str_db('users','user_id','nickname',session['nickname'])[0][0]
-        u_sql=f"update users set nickname='{nickname}',name='{name}',sex='{sex}',email='{email}' where user_id={user_id};"
+        if passwd=='':
+            u_sql=f"update users set nickname='{nickname}',name='{name}',sex='{sex}',email='{email}' where user_id={user_id};"
+        else:
+            u_sql=f"update users set nickname='{nickname}',name='{name}',sex='{sex}',email='{email}',passwd='{passwd}' where user_id={user_id};"
     else:
         user_id=sql_api.select_str_db('administrators','Admin_id','nickname',session['nickname'])[0][0]
-        u_sql=f"update administrators set nickname='{nickname}',name='{name}',sex='{sex}',email='{email}' where Admin_id={user_id};"
+        if passwd=='':
+            u_sql=f"update administrators set nickname='{nickname}',name='{name}',sex='{sex}',email='{email}' where Admin_id={user_id};"
+        else:
+            u_sql=f"update users set nickname='{nickname}',name='{name}',sex='{sex}',email='{email}',passwd='{passwd}' where user_id={user_id};"
     ans=sql_api.update_db(u_sql)
     session['nickname']=nickname
     return ans
@@ -259,6 +266,25 @@ def update():
 @app.route('/introduce/',methods=['GET','POST'])
 def introduce():
     return render_template('introduce.html')
+
+@app.route('/tongji/',methods=['GET','POST'])
+def tongji():
+    return render_template('tongji.html')
+
+@app.route('/get-tongji/',methods=['GET','POST'])
+def get_tongji():
+    if session['table']=='users':
+        user_id=sql_api.select_str_db('users','user_id','nickname',session['nickname'])[0][0]
+        ans=sql_api.select_all_bynum('users_record_statistics','user_id',user_id)[0]
+        #print(ans)
+        answers=[]
+        answers.append((ans[0],ans[1],ans[2],ans[3].strftime("%Y-%m-%d %H:%M:%S")))
+        #print('answers',answers)
+        return json.dumps(answers)
+    else:
+        answers=sql_api.select_all_bynum('tongji',1,1)
+        print(answers)
+        return json.dumps(answers)
 
 #处理参数中的每一行，变量名懒得改了，并不是对应变量名
 def eachline(ans):

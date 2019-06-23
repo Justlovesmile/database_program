@@ -40,7 +40,7 @@ def select_str_db(table,need,key,value):
     conn=connect_db()
     cursor=conn.cursor()
     s_sql=f"select {need} from {table} where {key}='{value}';" 
-    print(s_sql)
+    #print(s_sql)
     try:
         ans=cursor.fetchmany(cursor.execute(s_sql))    
     except:
@@ -86,7 +86,7 @@ def select_all_bynum(table,key,value):
     conn=connect_db()
     cursor=conn.cursor()
     s_sql=f"select * from {table} where {key}={value};" 
-    #print(s_sql)
+    print(s_sql)
     try:
         ans=cursor.fetchmany(cursor.execute(s_sql))    
     except:

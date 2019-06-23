@@ -1,0 +1,148 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="icon" href="https://jscdn.com.cn/highcharts/images/favicon.ico">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="shortcut icon" href="/static/img/logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        /* css 代码  */
+        #datatable {
+            border: 1px solid #ccc;
+            border-collapse: collapse;
+            border-spacing: 0;
+            font-size: 12px;
+        }
+
+        td,
+        th {
+            border: 1px solid #ccc;
+            padding: 4px 20px;
+        }
+    </style>
+    <script src="https://code.highcharts.com.cn/highcharts/highcharts.js"></script>
+    <script src="https://code.highcharts.com.cn/highcharts/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com.cn/highcharts/modules/data.js"></script>
+    <script src="https://img.hcharts.cn/highcharts-plugins/highcharts-zh_CN.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-3.4.1.js"></script>
+    <link rel="stylesheet" href="/static/css/base.css">
+    <script type="text/javascript" src="/static/js/check_session.js"></script>
+    <title>数据统计</title>
+</head>
+
+<body>
+    <div class='header'>
+        <div class="menu">
+            <div>
+                <ul class="menubar" id="left_nav">
+                    <li class="menu-value"><a class="navbar_img" style="font-weight:bold" href="/">
+                            <img src="/static/img/bbs.png" class="navbar_img"></a>
+                    <li>
+                    <li class=""><a href="/"><span class="glyphicon glyphicon-home"></span> 首页</a></li>
+                    <li class=""><a href="/newpost/"><span class="glyphicon glyphicon-time"></span> 最新</a></li>
+                    <li class=""><a href="/search/"><span class="glyphicon glyphicon-search"></span> 搜索</a></li>
+                    <li class=""><a href="/introduce/"><span class="glyphicon glyphicon-info-sign"></span> 说明</a></li>
+                </ul>
+                <ul class="menubar_right" id="right_nav">
+                    <li id="session_check_nav"><a href='/login/'> 登陆</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class='content'>
+        <div class='content_box'>
+            <div class='card' id='user_info_box'>
+                <! -- 用户信息 -->
+                    <p style='text-align: center;'>👇查看统计数据👇</p>
+            </div>
+            <div class='card'>
+                <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto;"></div>
+                <p>数据表格</p>
+                <table id="datatable">
+                    <thead>
+                        <tr id='data_th'>
+                            <! -- 标题 -->
+                            <th></th>
+                            <th>发帖数</th>
+                            <th>评论数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id='data_td'>
+                            <! -- 数据 -->
+                            <td>统计</td>
+                            <td>1</td>
+                            <td>1</td>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        get_tongji = function () {
+            $.post('/check-session/', {}, function (ans) {
+                if (ans == '') {
+                    alert('请登陆后再查看！')
+                    window.location.replace('/login/')
+                }
+                else {
+                    nickname = ans
+                    $.post('/check-permission/', {}, function (ans) {
+                        if (ans == 'users') {
+                            $.post('/get-tongji/', {}, function (ans) {
+                                ans = $.parseJSON(ans)[0]
+                                $('#user_info_box').append("<p><strong>注册时间：</strong>" + ans[3] + "</p>")
+                                $('#data_th').html("<th></th><th>发帖数</th><th>评论数</th>")
+                                $('#data_td').html("<td>统计</td><td>"+ans[1]+"</td><td>"+ans[2]+"</td>")
+                            })
+
+                        }
+                        else {
+                            $.post('/get-tongji/', {}, function (ans) {
+                                ans = $.parseJSON(ans)[0]
+                                $('#data_th').html("<th></th><th>用户数</th><th>发帖数</th><th>评论数</th>")
+                                $('#data_td').html("<td>统计</td><td>" + ans[0] + "</td><td>" + ans[1] + "</td><td>" + ans[2] + "</td>")
+                            })
+                        }
+                    })
+                }
+            })
+        }
+
+        $(document).ready(function () {
+            get_tongji()
+            // JS 代码
+            var chart = Highcharts.chart('container', {
+                data: {
+                    table: 'datatable'
+                },
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: '网站数据图表'
+                    // 该功能依赖 data.js 模块，详见https://www.hcharts.cn/docs/data-modules
+                },
+                yAxis: {
+                    allowDecimals: false,
+                    title: {
+                        text: '个',
+                        rotation: 0
+                    }
+                },
+                tooltip: {
+                    formatter: function () {
+                        return '<b>' + this.series.name + '</b><br/>' +
+                            this.point.y + ' 个' + this.point.name.toLowerCase();
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
