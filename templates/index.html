@@ -66,6 +66,7 @@
         //定义所有函数
         post = function () {
             $.post('/check-permission/', {}, function (ans) {
+                console.log("check-permission    " + ans)
                 if (ans == 'users') {
                     title = $('#title').val()
                     post_content = $('#post_content').val()
@@ -73,12 +74,12 @@
                         alert("标题不能为空！")
                         return false
                     }
-                    console.log('标题' + title)
+                    //console.log('标题' + title)
                     if (post_content == '') {
                         alert("帖子内容不能为空！")
                         return false
                     }
-                    console.log('内容' + post_content)
+                    //console.log('内容' + post_content)
                     if (confirm('请再次确认是否提交？') == false) {
                         return false
                     }
@@ -86,25 +87,32 @@
                         'title': title,
                         'content': post_content
                     }
-                    $.post('/post-content/', data, function (ans) {
-                        console.log(ans)
-                        if (ans == "nosession") {
-                            alert("登录后才能发帖哟！")
-                            window.location.replace("/login/");
+                    //console.log('正在发送到后端')
+                    $.post('/post-content/',data, function(ans2){
+                        console.log(ans2)
+                        if (ans2 == "ok") {
+                            alert("发布成功了！")
+                            window.location.replace("/newpost/")
                         }
                         else {
-                            if (ans == "ok") {
-                                alert("发布成功了！")
-                                window.location.replace("/newpost/");
+                            if (ans2 == 'nosession') {
+                                alert("登录后才能发帖哟！")
+                                window.location.replace("/login/")
                             }
                             else {
                                 alert("发布失败了！")
+                                return false
                             }
                         }
-                    })
+                    });
+                    window.location.replace('/newpost/')
                 }
-                else{
+                if (ans == 'administrators') {
                     alert('管理员就不要发布帖子了！');
+                }
+                if (ans == "") {
+                    alert("登录后才能发帖哟！");
+                    window.location.replace("/login/");
                 }
             })
         }
@@ -118,8 +126,5 @@
         <p>哈尔滨工程大学---数据库课程设计---2019</p>
     </div>
 </body>
-<script>
-
-</script>
 
 </html>

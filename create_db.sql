@@ -1,3 +1,4 @@
+drop database if exists userprogram;
         /*建立数据库，并使用*/
         CREATE DATABASE IF NOT EXISTS userprogram;
         USE userprogram;
@@ -87,8 +88,26 @@
                 update users_record_statistics set comment_num=comment_num+1 where new.author_id=users_record_statistics.user_id;
                 SET SQL_SAFE_UPDATES = 1;
 			end ||
+		create trigger users_user_delete after delete on users for each row
+			begin
+				delete from users_record_statistics where users_record_statistics.user_id = old.user_id;
+			end ||
+		create trigger users_comment_delete after delete on comments for each row 
+			begin
+				SET SQL_SAFE_UPDATES = 0;
+                update users_record_statistics set comment_num=comment_num-1 where old.author_id=users_record_statistics.user_id;
+                SET SQL_SAFE_UPDATES = 1;
+			end ||
+		create trigger users_post_delete after delete on posts for each row
+			begin
+				SET SQL_SAFE_UPDATES = 0;
+                update users_record_statistics set post_num=post_num-1 where old.author_id=users_record_statistics.user_id;
+                SET SQL_SAFE_UPDATES = 1;
+			end ||
 		DELIMITER ;
         
+        
+        show triggers;
         /*数据初始化*/
         insert  into `Users`(`user_id`,`nickname`,`passwd`,`name`,`sex`,`email`,`permission_level`) values (1,'雷霆咆哮','qwer','沃利贝尔','男',null,5),(2,'1','1','1','男',null,5);
         insert  into `Administrators`(`Admin_id`,`nickname`,`passwd`,`name`,`sex`,`email`,`permission_level`) values (1,'至高管理员','justlovesmile','谢明杰','男','865717150@qq.com',0),(2,'1','1','JJ','男','666666666@qq.com',1);

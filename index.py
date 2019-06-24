@@ -49,6 +49,7 @@ def get_session_post_id():
 @app.route('/clear-session/',methods=['GET','POST'])
 def clear_session():
     session.pop('nickname')
+    session.pop('table')
     print('clearsession')
     return 'ok'
 
@@ -66,8 +67,10 @@ def logincheck():
 
 @app.route('/check-permission/',methods=['GET','POST'])
 def check_permission():
-    return session['table']
-
+    if session.get('table'):
+        return session.get('table')
+    else:
+        return ""
 #进入登陆界面
 @app.route('/login/',methods=['GET','POST'])
 def login():
@@ -104,10 +107,10 @@ def post_content():
         author_id=sql_api.select_str_db('users','user_id','nickname',session.get('nickname'))[0][0]
         #print('author_id',author_id)
         ans=sql_api.insert_posts(title,content,author_id)
-        #print(ans)
+        print(ans)
         return ans
     else:
-        #print('error')
+        #print('nosession')
         return "nosession"
 
 #进入最新帖子页面
@@ -283,7 +286,7 @@ def get_tongji():
         return json.dumps(answers)
     else:
         answers=sql_api.select_all_bynum('tongji',1,1)
-        print(answers)
+        #print(answers)
         return json.dumps(answers)
 
 #处理参数中的每一行，变量名懒得改了，并不是对应变量名
