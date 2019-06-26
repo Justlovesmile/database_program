@@ -41,6 +41,7 @@
                         <div class="form-group">
                             用户名：<input type="text" class="form-control" autofocus="autofocus" id="nickname" placeholder="必填" maxlength="20">
                             密  码：<input type="password" class="form-control" autofocus="autofocus" id="passwd" placeholder="必填" maxlength="20">
+                            再次输入密码：<input type="password" class="form-control" autofocus="autofocus" id="passwd2" placeholder="必填" maxlength="20">
                             姓  名：<input type="text" class="form-control" autofocus="autofocus" id="username" placeholder="非必填" maxlength="20">
                         </div>
                         <div class="form-group">
@@ -67,11 +68,16 @@
         signup_check=function(){
             nickname=$('#nickname').val()
             passwd=$('#passwd').val()
+            passwd2=$('#passwd2').val()
             username=$('#username').val()
             email=$('#email').val()
             sex=$('input:radio[name="sex"]:checked').val()
             if (nickname==''||passwd==''){
                 alert('注册失败！请检查必填项是否填写完毕.')
+                return false
+            }
+            if(passwd!=passwd2){
+                alert('两次输入的密码不一致！')
                 return false
             }
             data={

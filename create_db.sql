@@ -63,7 +63,7 @@ drop database if exists userprogram;
         
         /*创建用户记录表，相当于以用户id分组统计，使用触发器添加数据*/
         create table `users_record_statistics`(
-			`user_id` char(20) primary key not null,
+			`user_id` int(11) unsigned primary key not null,
             `post_num` int(11) default 0,
             `comment_num` int(11) default 0,
             `signup_time` datetime not null
