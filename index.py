@@ -261,7 +261,7 @@ def update():
         if passwd=='':
             u_sql=f"update administrators set nickname='{nickname}',name='{name}',sex='{sex}',email='{email}' where Admin_id={user_id};"
         else:
-            u_sql=f"update users set nickname='{nickname}',name='{name}',sex='{sex}',email='{email}',passwd='{passwd}' where user_id={user_id};"
+            u_sql=f"update administrators set nickname='{nickname}',name='{name}',sex='{sex}',email='{email}',passwd='{passwd}' where Admin_id={user_id};"
     ans=sql_api.update_db(u_sql)
     session['nickname']=nickname
     return ans

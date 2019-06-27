@@ -39,7 +39,7 @@ def selectall_db(table):
 def select_str_db(table,need,key,value):
     conn=connect_db()
     cursor=conn.cursor()
-    s_sql=f"select {need} from {table} where {key}='{value}';" 
+    s_sql=f"select {need} from {table} where {key}=binary'{value}';" 
     #print(s_sql)
     try:
         ans=cursor.fetchmany(cursor.execute(s_sql))    
@@ -69,7 +69,7 @@ def select_num_db(table,need,key,value):
 def select_all_bystr(table,key,value):
     conn=connect_db()
     cursor=conn.cursor()
-    s_sql=f"select * from {table} where {key}='{value}';" 
+    s_sql=f"select * from {table} where {key}=binary'{value}';" 
     #print(s_sql)
     try:
         ans=cursor.fetchmany(cursor.execute(s_sql))    
@@ -193,7 +193,7 @@ def update_db(u_sql):
     #修改数据
     conn=connect_db()
     cursor=conn.cursor()
-    print(u_sql)
+    #print(u_sql)
     try:
         cursor.execute(u_sql)
         conn.commit()

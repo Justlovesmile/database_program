@@ -115,7 +115,10 @@ a:visited { text-decoration: none;}
         .card a:link { text-decoration: none;}
         .card a:active { text-decoration:none}
         .card a:visited { text-decoration: none;}
-
+    .content_box{
+            width:80%;
+            margin-left: 10%;
+        }
 
 
             .welcome_img{
@@ -124,8 +127,5 @@ a:visited { text-decoration: none;}
                 margin: 10px;
                 border-radius:0;
             }
-    .content_box{
-        width:80%;
-        margin-left: 10%;
-    }
+    
 

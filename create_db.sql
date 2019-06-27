@@ -67,7 +67,7 @@ drop database if exists userprogram;
             `post_num` int(11) default 0,
             `comment_num` int(11) default 0,
             `signup_time` datetime not null
-        )DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1;
+        )DEFAULT CHARSET=utf8mb4;
 
         /*创建触发器*/
         DELIMITER ||
@@ -105,11 +105,32 @@ drop database if exists userprogram;
                 SET SQL_SAFE_UPDATES = 1;
 			end ||
 		DELIMITER ;
-        
-        
+        /*查询触发器
         show triggers;
+		*/
+		
+        /*构建存储过程：获取用户发布总数*/
+        DELIMITER ||
+        create procedure getinfo(in nick_name char(20),out result int(11))
+        begin 
+			declare post_count,comment_count,u_id int;
+            select user_id into u_id from users where nickname=nick_name;
+            select count(*) into post_count from posts where author_id=u_id;
+            select count(*) into comment_count from comments where author_id=u_id;
+            set result = post_count + comment_count;
+		end ||
+        DELIMITER ;
+		/*存储过程使用格式
+        call getinfo('Justlovesmile',@result);
+        select @result; 
+        */
+        
+        
         /*数据初始化*/
         insert  into `Users`(`user_id`,`nickname`,`passwd`,`name`,`sex`,`email`,`permission_level`) values (1,'雷霆咆哮','qwer','沃利贝尔','男',null,5),(2,'1','1','1','男',null,5);
         insert  into `Administrators`(`Admin_id`,`nickname`,`passwd`,`name`,`sex`,`email`,`permission_level`) values (1,'至高管理员','justlovesmile','谢明杰','男','865717150@qq.com',0),(2,'1','1','JJ','男','666666666@qq.com',1);
         insert  into `Posts`(`post_id`,`title`,`content`,`author_id`,`time`) values (1,"Welcome to XMJ_BBS!","Here you can write your ideas and share with others easily.Let's start it!",1,NOW());
         insert into `Comments`(`comment_id`,`post_id`,`content`,`author_id`,`time`) values (1,1,"Oh,This's so nice!I will use this BBS!",1,NOW());
+        
+
+       
